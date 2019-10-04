@@ -1,0 +1,9 @@
+{
+    "mongodb": {
+        "connection": "",
+        "dbName": ""
+    },
+    "settings": {
+        "morganLogLevel": ""
+    }
+}

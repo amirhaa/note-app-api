@@ -1,0 +1,9 @@
+{
+    "mongodb": {
+        "connection": "mongodb://localhost:27017",
+        "dbName": "note_app_test"
+    },
+    "settings": {
+        "morganLogLevel": "dev"
+    }
+}

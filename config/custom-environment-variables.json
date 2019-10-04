@@ -1,0 +1,9 @@
+{
+    "mongodb": {
+        "connection": "NOTE_APP_CONNECTION",
+        "dbName": "NOTE_APP_DB_NAME"
+    },
+    "settings": {
+        "morganLogLevel": "NOTE_APP_MORGAN_LOG_LEVEL"
+    }
+}
