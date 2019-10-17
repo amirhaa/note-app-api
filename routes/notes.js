@@ -17,9 +17,7 @@ router.post("/", apiValidation(validator), async (req, res) => {
         content: req.body.content,
     }));
 
-    if (error) {
-        return res.status(500).send(error.message);
-    }
+    if (error) return handleDbError(res, error);
 
     res.status(201).send(note);
 });
@@ -31,9 +29,9 @@ router.get("/:id", [validObjectId], async (req, res) => {
     } = req.params;
     const [error, note] = await to(NoteModel.findById(id));
 
-    if (error) {
-        return res.status(500).send(error.message);
-    }
+    if (error) return handleDbError(res, error);
+
+    if (!note) return handleNoObjFound(res, id);
 
     return res.status(200).send(pick(["_id", "title", "content"], note));
 });
@@ -43,11 +41,11 @@ router.patch("/:id", [validObjectId, apiValidation(validator)], async (req, res)
     const {
         id
     } = req.params;
-    const [error, note] = await to(NoteModel.findByIdAndUpdate(id, pick(["title", "content"], req.body)));
+    const [error, note] = await to(NoteModel.findOneAndUpdate({_id: id}, pick(["title", "content"], req.body), {new: true}));
 
-    if (error) {
-        return res.status(500).send(error.message);
-    }
+    if (error) return handleDbError(res, error);
+
+    if (!note) return handleNoObjFound(res, id);
 
     res.status(200).send(pick(["_id", "title", "content"], note));
 });
@@ -59,23 +57,23 @@ router.delete("/:id", [validObjectId], async (req, res) => {
     } = req.params;
     const [error, note] = await to(NoteModel.findByIdAndDelete(id));
 
-    if (error) {
-        return res.status(500).send(error.message);
-    }
+    if (error) return handleDbError(res, error);
+
+    if (!note) return handleNoObjFound(res, id);
 
     return res.status(200).send(pick(["_id", "title", "content"], note));
 });
 
-
 // List
 router.get("/", async (req, res) => {
-    const [error, notes] = await to(NoteModel.find());
+    const [error, notes] = await to(NoteModel.find({}, {'_id': true, 'title': true, 'content': true}));
 
-    if (error) {
-        return res.status(500).send(error.message);
-    }
+    if (error) return handleDbError(res, error);
 
     res.status(200).send(notes);
 });
+
+const handleDbError = (res, error) => res.status(500).send(error.message);
+const handleNoObjFound = (res, id) => res.status(404).send(`no object found with id ${id}`);
 
 module.exports = router;
