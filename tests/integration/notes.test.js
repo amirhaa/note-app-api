@@ -4,6 +4,8 @@ const {
 const request = require("supertest");
 const mongoose = require("mongoose");
 const {ObjectId} = require("mongoose").Types;
+const jwt = require("jsonwebtoken");
+const config = require("config");
 const {
     NoteModel
 } = require('../../models/notes');
@@ -11,17 +13,38 @@ const {
 let baseRoute = baseUrl("notes");
 let objectId = new ObjectId;
 let server;
+let token;
 
-const sendPostRequest = payload => request(server).post(baseRoute).set('Accept', 'application/json').send(payload);
-const sendGetRequest = (id) => request(server).get(`${baseRoute}/${id}`).set('Accept', 'application/json').send();
-const sendPatchRequest = (id, payload) => request(server).patch(`${baseRoute}/${id}`).set('Accept', 'application/json').send(payload);
-const sendDeleteRequest = (id) => request(server).delete(`${baseRoute}/${id}`).set('Accept', 'application/json').send();
+const sendPostRequest = payload => request(server)
+    .post(baseRoute)
+    .set('Accept', 'application/json')
+    .set('Authorization', `jwt ${token}`)
+    .send(payload);
+
+const sendGetRequest = (id) => request(server)
+    .get(`${baseRoute}/${id}`)
+    .set('Accept', 'application/json')
+    .set('Authorization', `jwt ${token}`)
+    .send();
+
+const sendPatchRequest = (id, payload) => request(server)
+    .patch(`${baseRoute}/${id}`)
+    .set('Accept', 'application/json')
+    .set('Authorization', `jwt ${token}`)
+    .send(payload);
+
+const sendDeleteRequest = (id) => request(server)
+    .delete(`${baseRoute}/${id}`)
+    .set('Accept', 'application/json')
+    .set('Authorization', `jwt ${token}`)
+    .send();
 
 const createNote = (obj) => NoteModel.create(obj);
 
 describe(baseRoute, () => {
-    beforeEach(() => {
-        server = require("../../index");
+    beforeAll(async () => {
+        server = await require("../../index");
+        token = jwt.sign({ email: "someemail" }, config.get('jwtSecretKey'));
     });
     afterEach(async () => {
         await NoteModel.deleteMany({});

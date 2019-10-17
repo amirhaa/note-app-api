@@ -5,13 +5,14 @@ const {
     validator
 } = require("../models/notes");
 const validObjectId = require("../middlewares/validObjectId");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 const to = require("await-to-js").default;
 const {
     pick
 } = require("ramda");
 
 // Create
-router.post("/", apiValidation(validator), async (req, res) => {
+router.post("/", [isAuthenticated, apiValidation(validator)], async (req, res) => {
     const [error, note] = await to(NoteModel.create({
         title: req.body.title,
         content: req.body.content,
@@ -23,7 +24,7 @@ router.post("/", apiValidation(validator), async (req, res) => {
 });
 
 // Retrieve
-router.get("/:id", [validObjectId], async (req, res) => {
+router.get("/:id", [isAuthenticated, validObjectId], async (req, res) => {
     const {
         id
     } = req.params;
@@ -37,7 +38,7 @@ router.get("/:id", [validObjectId], async (req, res) => {
 });
 
 // Update
-router.patch("/:id", [validObjectId, apiValidation(validator)], async (req, res) => {
+router.patch("/:id", [isAuthenticated, validObjectId, apiValidation(validator)], async (req, res) => {
     const {
         id
     } = req.params;
@@ -51,7 +52,7 @@ router.patch("/:id", [validObjectId, apiValidation(validator)], async (req, res)
 });
 
 // Delete
-router.delete("/:id", [validObjectId], async (req, res) => {
+router.delete("/:id", [isAuthenticated, validObjectId], async (req, res) => {
     const {
         id
     } = req.params;
@@ -65,7 +66,7 @@ router.delete("/:id", [validObjectId], async (req, res) => {
 });
 
 // List
-router.get("/", async (req, res) => {
+router.get("/", isAuthenticated ,async (req, res) => {
     const [error, notes] = await to(NoteModel.find({}, {'_id': true, 'title': true, 'content': true}));
 
     if (error) return handleDbError(res, error);
