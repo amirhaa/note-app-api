@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "export NODE_ENV='development' && nodemon index",
-    "test": "export NODE_ENV='test' && jest --watch --runInBand --detectOpenHandles --coverage"
+    "test": "export NODE_ENV='test' && jest --watchAll --runInBand --detectOpenHandles --coverage"
   },
   "keywords": [],
   "author": "",
