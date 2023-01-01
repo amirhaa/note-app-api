@@ -14,7 +14,7 @@
     "@hapi/joi": "^16.1.5",
     "await-to-js": "^2.1.1",
     "bcrypt": "^3.0.6",
-    "config": "^3.2.2",
+    "config": "^3.3.8",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "killable": "^1.0.1",
